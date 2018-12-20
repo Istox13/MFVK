@@ -1,38 +1,51 @@
-import json, requests
+import sys
+import os
+from Libs.Get_music import VK_lib
+from PyQt5.QtWidgets import QApplication, QWidget, QPushButton, QLineEdit, QLabel
+ 
+ 
+class Example(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+ 
+    def initUI(self):
+        self.setGeometry(300, 300, 250, 70)
+        self.setWindowTitle('Введите ID')    
 
-def Get_json(id=463892171):
-    s = requests.post("https://vrit.me/action.php",data={
-        "method": "audio.get",
-        "count": 1000000000,
-        "offset": 0,
-        "user_id": id})
+        self.btn = QPushButton('ОК', self)
+        self.btn.resize(50, 20)
+        self.btn.move(25, 40)
+ 
+        self.btn.clicked.connect(self.input_ID)
 
-    s = json.loads(s.text)
+        self.label = QLabel(self)
+        self.label.resize(125, 20)
+        self.label.move(100, 40)
 
-    music = dict()
-    ms = s['html'].split('\n')
-    n_ms = list()
+        self.name_input = QLineEdit(self)
+        self.name_input.resize(200, 20)
+        self.name_input.move(25, 10)
 
-    while ms:
-        if len(ms) >= 13:
-            n_ms.append(ms[:13])
-        ms = ms[13:]
+    def User_name(self):
+        self.label.setText(VK_lib.get_name(int(self.name_input.text())))
 
-    for n, i in enumerate(n_ms):
-        composition = dict()
-        composition['artist'] = i[11].strip().split('<div class="artist">')[1].split('<')[0]
-        composition['name'] = i[10].strip().split('<div class="title">')[1].split('<')[0]
-        composition['long'] = i[9].strip().split('<div class="duration">')[1].split('<')[0]
-        composition['image'] = i[1].strip().split('<div class="cover" \
-        style="background-image: url(')[1][1:].split("'")[0] 
-        composition['url'] = i[2].strip().split('<div class="play" data="')[1].split('"')[0]
-        music[str(n)] = composition
+    def input_ID(self):
+        self.label.setText('')
+        if self.name_input.text().isdigit():
+            self.User_name()
+            if os.name == 'nt':
+                os.system('python run.py {}'.format(self.name_input.text()))
+            else:
+                os.system('python3 run.py {}'.format(self.name_input.text()))
 
-    return music
-    
+        else:
+            self.label.setText("Некорректный ввод")
 
-    
-    
-
-
-
+ 
+ 
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    ex = Example()
+    ex.show()
+    sys.exit(app.exec())  

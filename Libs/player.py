@@ -15,7 +15,10 @@ class Player:
 
         #Устанавливаем грокость - максимум.
         pygame.mixer.music.set_volume(1.0)
-        
+    
+    def set_volume(self, n):
+        pygame.mixer.music.set_volume(n)
+
     def play_music(self, music_file):
         try:
             clock = pygame.time.Clock()
@@ -39,6 +42,9 @@ class Player:
                 pygame.mixer.music.stop()
                 raise SystemExit
 
+    def get_busy(self):
+        return pygame.mixer.music.get_busy()
+        
     def pause(self):
         pygame.mixer.music.pause()
     
